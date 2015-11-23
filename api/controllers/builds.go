@@ -65,6 +65,7 @@ func BuildGet(rw http.ResponseWriter, r *http.Request) *httperr.Error {
 
 func BuildCreate(rw http.ResponseWriter, r *http.Request) *httperr.Error {
 	build := models.NewBuild(mux.Vars(r)["app"])
+	config := r.FormValue("config")
 
 	err := r.ParseMultipartForm(50 * 1024 * 1024)
 
@@ -101,7 +102,7 @@ func BuildCreate(rw http.ResponseWriter, r *http.Request) *httperr.Error {
 			return httperr.Server(err)
 		}
 
-		go build.ExecuteLocal(source, cache, ch)
+		go build.ExecuteLocal(source, cache, config, ch)
 
 		err = <-ch
 
